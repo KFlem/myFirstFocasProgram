@@ -152,29 +152,28 @@ namespace myFirstFocasProgram
         }
         static void Main(string[] args)
         {
-            string ipaddr = "";
+            string ipaddr = "127.0.0.1";
 
-            // If we specified an ip address, get it from the args
-            if (args.Length > 0)
-                ipaddr = args[0];
-
-            // If we didn't provide an IP address, use HSSB, otherwise use Ethernet
-            if (string.IsNullOrEmpty(ipaddr))
-            {
-                Console.WriteLine("*ERROR* - You Must Provide an ip address for the machine.");
-                System.Environment.Exit(-9999);  
-            }
-            
             Console.WriteLine("Start Program");
+
             Connect(ipaddr);
-           
+
+            
             string mode = GetMode();
             Console.WriteLine("MODE = " + mode);
 
             string status = GetStatus();
             Console.WriteLine("STATUS = " + status);
+            
+            
+            
+            
+            
+            Console.WriteLine("Hello World-2222");
 
             Disconnect();
+
+            
             Console.WriteLine("Handle Successfully Destroyed...");
             Console.WriteLine("End Program");
         }
