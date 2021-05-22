@@ -1,0 +1,11 @@
+C:\myFirstFocasProgram\obj\Debug\netcoreapp2.1\myFirstFocasProgram.csprojAssemblyReference.cache
+C:\myFirstFocasProgram\obj\Debug\netcoreapp2.1\myFirstFocasProgram.csproj.CoreCompileInputs.cache
+C:\myFirstFocasProgram\obj\Debug\netcoreapp2.1\myFirstFocasProgram.AssemblyInfoInputs.cache
+C:\myFirstFocasProgram\obj\Debug\netcoreapp2.1\myFirstFocasProgram.AssemblyInfo.cs
+C:\myFirstFocasProgram\bin\Debug\netcoreapp2.1\myFirstFocasProgram.deps.json
+C:\myFirstFocasProgram\bin\Debug\netcoreapp2.1\myFirstFocasProgram.runtimeconfig.json
+C:\myFirstFocasProgram\bin\Debug\netcoreapp2.1\myFirstFocasProgram.runtimeconfig.dev.json
+C:\myFirstFocasProgram\bin\Debug\netcoreapp2.1\myFirstFocasProgram.dll
+C:\myFirstFocasProgram\bin\Debug\netcoreapp2.1\myFirstFocasProgram.pdb
+C:\myFirstFocasProgram\obj\Debug\netcoreapp2.1\myFirstFocasProgram.dll
+C:\myFirstFocasProgram\obj\Debug\netcoreapp2.1\myFirstFocasProgram.pdb
