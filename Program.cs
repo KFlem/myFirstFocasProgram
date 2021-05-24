@@ -4,8 +4,15 @@ namespace myFirstFocasProgram
 {
     class Program
     {
+
+
+        private static FOCAS64.ODBOMHIS2 _data = new FOCAS64.ODBOMHIS2();
+
         private static ushort _handle;
         private static short _ret;
+
+        private static ushort _NumRecs;
+
         public static void Connect(string ipaddr)
         {
 
@@ -23,7 +30,7 @@ namespace myFirstFocasProgram
             }
 
 
-            Console.WriteLine("Hello World-Allocate Handle Successful");
+            Console.WriteLine("Handle Successfully Allocated...");
             
         }
         public static string GetMode()
@@ -59,6 +66,7 @@ namespace myFirstFocasProgram
                 return GetStatusString(status.run);
             return "UNAVAILABLE";
         }
+
         private static string GetModeString(short mode)
         {
             switch (mode)
@@ -144,38 +152,135 @@ namespace myFirstFocasProgram
                     }
             }
         }
+        
+        
+        
+        public static void StopOpHis()
+        {
+            // Free the Focas handle
+            FOCAS64.cnc_stopophis(_handle);
+            Console.WriteLine("OpHist Stopped Successfully...");
+        }
+
+        public static void StartOpHis()
+        {
+            // Free the Focas handle
+            FOCAS64.cnc_startophis(_handle);
+            Console.WriteLine("OpHist Started Successfully...");
+
+       
+        }
+
+
+
+
+
+
+        
+        public static string GetOperatorMessageHistoryCOUNT()
+        {
+            if (_handle == 0)
+                return "UNAVAILABLE";
+
+
+            _ret = FOCAS64.cnc_rdomhisno(_handle, out _NumRecs);
+
+            
+            if (_ret == FOCAS64.EW_OK)
+                return "Func --> GetOperatorMessageHistoryCOUNT has executed successfully...";
+            
+            return "Func --> GetOperatorMessageHistoryCOUNT has FAILED with exit code --> " + _ret;
+
+
+
+        }
+        
+
+        public static string GetOperatorMessageHistory()
+        {
+            if (_handle == 0)
+                return "UNAVAILABLE";
+
+
+            ushort s_no = 1;
+
+            ushort length = (ushort)(4 + 272 * _NumRecs);
+            
+            
+            //FOCAS64.ODBOMHIS2 data = new FOCAS64.ODBOMHIS2(_NumRecs);
+            FOCAS64.ODBOMHIS2 data = new FOCAS64.ODBOMHIS2();
+
+            
+            Console.WriteLine("Handle    = {0}", _handle );
+            Console.WriteLine("Start num = {0}", s_no );
+            Console.WriteLine("End Num   = {0}", _NumRecs );
+            Console.WriteLine("Length    = {0}", length );
+            
+            _ret = FOCAS64.cnc_rdomhistry2(_handle, s_no, _NumRecs, length, _data);
+
+            if (_ret == FOCAS64.EW_OK)
+                return "Func --> GetOperatorMessageHistory has executed successfully...exit code --> " + _ret;
+            return "Func --> GetOperatorMessageHistory has FAILED with exit code --> " + _ret;
+        }
+        
+        
+        
         public static void Disconnect()
         {
             // Free the Focas handle
-            FOCAS64.cnc_freelibhndl(_handle);
-       
+            _ret = FOCAS64.cnc_freelibhndl(_handle);
+            
+            if(_ret == FOCAS64.EW_OK)
+                Console.WriteLine("Disconnect Function Executed Successfully...");
+
+            else
+                Console.WriteLine("Disconnect Function FAILED with exit code " + _ret);
+
         }
+
+
+
+
+
         static void Main(string[] args)
         {
+            Console.WriteLine("-------------------------------------------------------");
+            Console.WriteLine("_data is a class definition of type " + _data.GetType());
+               
             string ipaddr = "127.0.0.1";
-
-            Console.WriteLine("Start Program");
-
+            //string ipaddr = "10.0.2.99";
+            //string ipaddr = "10.0.3.9";
             Connect(ipaddr);
 
+            Console.WriteLine("MACHINE   MODE  = {0}", GetMode());
+            Console.WriteLine("MACHINE  STATUS = {0}", GetStatus());
+            StopOpHis();
+            Console.WriteLine("NUM OP MESSAGES = {0}", GetOperatorMessageHistoryCOUNT());
             
-            string mode = GetMode();
-            Console.WriteLine("MODE = " + mode);
+            Console.WriteLine(GetOperatorMessageHistory());
+            
+            StartOpHis();
 
-            string status = GetStatus();
-            Console.WriteLine("STATUS = " + status);
+            Console.WriteLine(_data.s_no);
+            Console.WriteLine(_data.e_no);
+            Console.WriteLine(_data.opm_his.data1.dsp_flg);
+            Console.WriteLine(_data.opm_his.data1.om_no);
+            Console.WriteLine(_data.opm_his.data1.year);
+            Console.WriteLine(_data.opm_his.data1.month);
+            Console.WriteLine(_data.opm_his.data1.day);
+            Console.WriteLine(_data.opm_his.data1.hour);
+            Console.WriteLine(_data.opm_his.data1.minute);
+            Console.WriteLine(_data.opm_his.data1.second);
+            Console.WriteLine(_data.opm_his.data1.ope_msg);
+
             
-            
-            
-            
-            
-            Console.WriteLine("Hello World-2222");
 
             Disconnect();
-
-            
-            Console.WriteLine("Handle Successfully Destroyed...");
+                 
             Console.WriteLine("End Program");
+            Console.WriteLine("-------------------------------------------------------");
+
         }
+ 
     }
 }

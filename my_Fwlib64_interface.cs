@@ -95,6 +95,14 @@ public class FOCAS64
     [DllImport("Fwlib64.dll", EntryPoint="cnc_startophis")]
     public static extern short cnc_startophis( ushort FlibHndl );
 
+    /* stop logging operation history data */
+    [DllImport("Fwlib64.dll", EntryPoint="cnc_stopomhis")]
+    public static extern short cnc_stopomhis( ushort FlibHndl );
+
+    /* restart logging operation history data */
+    [DllImport("Fwlib64.dll", EntryPoint="cnc_startomhis")]
+    public static extern short cnc_startomhis( ushort FlibHndl );
+
     /* read number of operater message history data */
     [DllImport("Fwlib64.dll", EntryPoint="cnc_rdomhisno")]
     public static extern short cnc_rdomhisno( ushort FlibHndl, out ushort a );
@@ -136,11 +144,11 @@ public class FOCAS64
     [DllImport("Fwlib64.dll", EntryPoint="cnc_rdetherinfo")]
     public static extern short cnc_rdetherinfo( ushort FlibHndl, out short a, out short b );
 
-
-
+    /* ---------------------------------------- */
+    /* ---------------------------------------- */
     /* cnc_rdomhistry2:read operater message history data */
-    [StructLayout(LayoutKind.Sequential,Pack=4)]
-    public class OPM_HIS
+    [StructLayout( LayoutKind.Sequential, CharSet=CharSet.Ansi, Pack=4)]
+    public class ODBOMHIS2_data
     {
         public short   dsp_flg;     /* Dysplay flag(ON/OFF) */
         public short   om_no;       /* operater message number */
@@ -151,25 +159,54 @@ public class FOCAS64
         public short   minute;      /* Minute */
         public short   second;      /* Second */
         [MarshalAs(UnmanagedType.ByValTStr,SizeConst=256)]
-        public string  alm_msg = new string(' ',256) ;  /* alarm message */
+        public string  ope_msg = new string(' ',256) ;  /* operator message message */
     }
+
+    [StructLayout(LayoutKind.Sequential,Pack=4)]
+    public class OPM_HIS
+    {
+        public ODBOMHIS2_data   data1 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data2 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data3 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data4 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data5 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data6 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data7 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data8 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data9 = new ODBOMHIS2_data();
+        public ODBOMHIS2_data   data10 = new ODBOMHIS2_data();
+
+
+
+    }
+
     [StructLayout(LayoutKind.Sequential,Pack=4)]
     public class ODBOMHIS2
-    {      
+    {   
+        /*   
         private static ushort NumRecs;
         
         public ODBOMHIS2(ushort num_records)
         {
             NumRecs= num_records;
         }
-        
+        */
         public ushort  s_no;   /* start number */
         
         public ushort  e_no;   /* end number */
         
-        public OPM_HIS[] opm_his = new OPM_HIS[NumRecs];
+        public OPM_HIS opm_his = new OPM_HIS();
 
     }
+
+    /* ---------------------------------------- */
+
+
+
+
+
+
+    /* ---------------------------------------- */
     /* cnc_statinfo:read CNC status information */
     [StructLayout(LayoutKind.Sequential,Pack=4)]
     public class ODBST
@@ -185,5 +222,6 @@ public class FOCAS64
     public short  edit ;        /* Status of program editing       */
 
     }
+    /* ---------------------------------------- */
 
 }
