@@ -1,0 +1,4 @@
+C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp3.0\myFirstFocasProgram.csprojAssemblyReference.cache
+C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp3.0\myFirstFocasProgram.AssemblyInfoInputs.cache
+C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp3.0\myFirstFocasProgram.AssemblyInfo.cs
+C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp3.0\myFirstFocasProgram.csproj.CoreCompileInputs.cache
