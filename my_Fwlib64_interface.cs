@@ -13,6 +13,8 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Collections;  
 
 public class FOCAS64
 {
@@ -148,7 +150,7 @@ public class FOCAS64
     /* ---------------------------------------- */
     /* cnc_rdomhistry2:read operater message history data */
     [StructLayout( LayoutKind.Sequential, CharSet=CharSet.Ansi, Pack=4)]
-    public class ODBOMHIS2_data
+    public class ODBOMHIS2_data : IEnumerable
     {
         public short   dsp_flg;     /* Dysplay flag(ON/OFF) */
         public short   om_no;       /* operater message number */
@@ -160,7 +162,31 @@ public class FOCAS64
         public short   second;      /* Second */
         [MarshalAs(UnmanagedType.ByValTStr,SizeConst=256)]
         public string  ope_msg = new string(' ',256) ;  /* operator message message */
-    }
+
+        public IEnumerator GetEnumerator()
+        {
+            yield return dsp_flg;
+            yield return om_no;
+            yield return year;
+            yield return month;
+            yield return day;
+            yield return hour;
+            yield return minute;
+            yield return second;
+            yield return ope_msg;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+
+
+    }   
+
+
+
 
     [StructLayout(LayoutKind.Sequential,Pack=4)]
     public class OPM_HIS
@@ -175,22 +201,15 @@ public class FOCAS64
         public ODBOMHIS2_data   data8 = new ODBOMHIS2_data();
         public ODBOMHIS2_data   data9 = new ODBOMHIS2_data();
         public ODBOMHIS2_data   data10 = new ODBOMHIS2_data();
-
-
-
+        
     }
+
+
 
     [StructLayout(LayoutKind.Sequential,Pack=4)]
     public class ODBOMHIS2
     {   
-        /*   
-        private static ushort NumRecs;
-        
-        public ODBOMHIS2(ushort num_records)
-        {
-            NumRecs= num_records;
-        }
-        */
+
         public ushort  s_no;   /* start number */
         
         public ushort  e_no;   /* end number */

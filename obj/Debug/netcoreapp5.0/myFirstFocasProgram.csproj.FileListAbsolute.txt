@@ -1,4 +1,3 @@
-C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasProgram.csprojAssemblyReference.cache
 C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasProgram.GeneratedMSBuildEditorConfig.editorconfig
 C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasProgram.AssemblyInfoInputs.cache
 C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasProgram.AssemblyInfo.cs
@@ -69,3 +68,4 @@ C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasP
 C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\ref\myFirstFocasProgram.dll
 C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasProgram.pdb
 C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasProgram.genruntimeconfig.cache
+C:\focasWrapper\dotnet\myFirstFocasProgram\obj\Debug\netcoreapp5.0\myFirstFocasProgram.csproj.AssemblyReference.cache

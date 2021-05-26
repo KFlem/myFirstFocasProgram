@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Data.Linq;
 using System.Data.SqlClient;
 
@@ -14,7 +16,7 @@ namespace myFirstFocasProgram
 
         private static ushort _NumRecs;
 
-        public static void Connect(string ipaddr)
+        public static void Connect_CNC(string ipaddr)
         {
 
             _ret = FOCAS64.cnc_allclibhndl3(ipaddr, 8193, 6, out _handle);
@@ -23,15 +25,14 @@ namespace myFirstFocasProgram
             // Write the result to the console
             if (_ret == FOCAS64.EW_OK)
             {
-                Console.WriteLine("We are connected!");
+                Console.WriteLine("\nConnect_CNC function executed successfully...");
             }
             else
             {
-                Console.WriteLine("There was an error connecting. Return value: " + _ret);
+                Console.WriteLine("\nThere was an error connecting. Return value: " + _ret);
             }
 
 
-            Console.WriteLine("Handle Successfully Allocated...");
             
         }
         public static string GetMode()
@@ -153,9 +154,6 @@ namespace myFirstFocasProgram
                     }
             }
         }
-        
-        
-        
         public static void StopOpHis()
         {
             // Free the Focas handle
@@ -215,7 +213,7 @@ namespace myFirstFocasProgram
             Console.WriteLine("Handle    = {0}", _handle );
             Console.WriteLine("Start num = {0}", s_no );
             Console.WriteLine("End Num   = {0}", _NumRecs );
-            Console.WriteLine("Length    = {0}", length );
+            Console.WriteLine("Data Block Length = {0}", length );
             
             _ret = FOCAS64.cnc_rdomhistry2(_handle, s_no, _NumRecs, length, _data);
 
@@ -226,16 +224,16 @@ namespace myFirstFocasProgram
         
         
         
-        public static void Disconnect()
+        public static void Disconnect_CNC()
         {
             // Free the Focas handle
             _ret = FOCAS64.cnc_freelibhndl(_handle);
             
             if(_ret == FOCAS64.EW_OK)
-                Console.WriteLine("Disconnect Function Executed Successfully...");
+                Console.WriteLine("Disconnect_CNC Function Executed Successfully...");
 
             else
-                Console.WriteLine("Disconnect Function FAILED with exit code " + _ret);
+                Console.WriteLine("Disconnect_CNC Function FAILED with exit code " + _ret);
 
         }
 
@@ -253,31 +251,25 @@ namespace myFirstFocasProgram
             
 
 
-        private static int CreateCommand(string queryString, string connectionString)
-        {
-            using (SqlConnection connection = new SqlConnection(
-                    connectionString))
-            {
-                SqlCommand command = new SqlCommand(queryString, connection);
-                command.Connection.Open();
-                return command.ExecuteNonQuery();
-            }
-        }
-
 
         static void Main(string[] args)
         {
+
+            Console.WriteLine("\n-------------------------------------------------------");
+
             string server = @"Server=10.0.3.3;";
             string uid = @"uid=application;";
             string password = @"password=kjhfaglk4831j*984e7kuhgfkasd98e-0p75gfdo;";
-            string database = @"Initial Catalog=CNC-DATA;";
+            string database = @"Initial Catalog=CNC_DATA;";
+
             string connString = server + database + uid + password;
-            string cmd = @"SELECT ope_msg FROM all_operator_messages;";
+
+            string cmd1 = @"SELECT Ope_msg FROM OperatorMessages;";
             
-            
+            /*
             using (SqlConnection connection = new SqlConnection(connString))
             {
-                SqlCommand command = new SqlCommand(cmd, connection);
+                SqlCommand command = new SqlCommand(cmd1, connection);
 
                 connection.Open();
                 Console.WriteLine("***************************************************************");
@@ -290,83 +282,116 @@ namespace myFirstFocasProgram
                     Console.WriteLine("***************************************************************");
                     while (reader.Read())
                     {
+                     
                         Console.WriteLine(String.Format("{0}", reader[0]));
                     }
                 }
 
             }
+            */
+            
+            //DataContext db = new DataContext(connString);
+   
+            //Console.WriteLine("db is a class definition of type " + db.GetType());
 
 
-
-            Console.WriteLine(CreateCommand(cmd, connString));
-            
-            
-            
-            
-            DataContext db = new DataContext(connString);
-            
-            Console.WriteLine("db is a class definition of type " + db.GetType());
-            
-            
-            Console.WriteLine("Data Context is as follows...");
-            Console.WriteLine(db.Mapping.GetTables());
-            
-            var datamodel = db.Mapping;
-
-            Console.WriteLine("ContextType = " + datamodel.ContextType);
-            Console.WriteLine("Name = " + datamodel.DatabaseName);
-            Console.WriteLine("Mapping Source = " + datamodel.MappingSource);
-            Console.WriteLine("Provider Type = " + datamodel.ProviderType);
-
-            
-            foreach (var r in datamodel.GetTables())
-            {
-                Console.WriteLine(r.TableName);
-                Console.WriteLine();
-            }
-    
-
+            //Console.WriteLine("-------------------------------------------------------");
+            //Console.WriteLine("_data is a class definition of type " + _data.opm_his.GetType());
 
             /*
-            var query = from message in db.all_operator_messages
-                        where message.machineID == 1
-                        select message;
-
-            foreach (var message in query)
-                Console.WriteLine("Machine 1 has executed part {0}", message.ope_msg);
+            foreach (var rec in _data.opm_his)
+            {
+                Console.WriteLine(rec.GetType());
+            }
             */
 
 
-            Console.WriteLine("-------------------------------------------------------");
-            Console.WriteLine("_data is a class definition of type " + _data.GetType());
-               
             string ipaddr = "127.0.0.1";
             //string ipaddr = "10.0.2.99";
             //string ipaddr = "10.0.3.9";
             
             
             
-            Connect(ipaddr);
+            
+            Connect_CNC(ipaddr);
+            GetOperatorMessageHistoryCOUNT();
+            Console.WriteLine("\n===============");
             Console.WriteLine("MACHINE = {0}", GetMachineString(ipaddr));
             Console.WriteLine("MACHINE   MODE  = {0}", GetMode());
             Console.WriteLine("MACHINE  STATUS = {0}", GetStatus());
             StopOpHis();
-            Console.WriteLine("NUM OP MESSAGES = {0}", GetOperatorMessageHistoryCOUNT());
-         
+            GetOperatorMessageHistoryCOUNT();
+            Console.WriteLine("NUM OP MESSAGES = {0}", _NumRecs );
+            Console.WriteLine("===============\n");
+
             Console.WriteLine(GetOperatorMessageHistory());
-            
+
+
+
+
             StartOpHis();
-            Disconnect();
+            Disconnect_CNC();
+
+            Type t1 = _data.GetType();
+            //int l1 = _data
+
+            Type t2 = _data.opm_his.GetType();
+            Type t3 = _data.opm_his.data1.GetType();
+            Type t4 = _data.opm_his.data1.dsp_flg.GetType();
+            var t4Val = _data.opm_his.data1.dsp_flg;
+            Type t5 = _data.opm_his.data1.om_no.GetType();
+            var t5Val = _data.opm_his.data1.om_no;
+
+        
 
 
-            Console.WriteLine("----------START OUT-----------");
+            Console.WriteLine("=======================================================\n");
+            Console.WriteLine("t1 type = " + t1);
+            Console.WriteLine("t2 type = " + t2);
+            Console.WriteLine("t3 type = " + t3);
+            Console.WriteLine("t4 type = " + t4);
+            Console.WriteLine("t4 value = " + t4Val);
+            Console.WriteLine("t5 type = " + t5);
+            Console.WriteLine("t5 value = " + t5Val);
+            _data.opm_his.data1.om_no = 9;
+            Console.WriteLine("t5 value = " + _data.opm_his.data1.om_no);
+
+            foreach (PropertyInfo pi in t1.GetProperties())
+            {
+                Console.WriteLine("Write line --> " + pi);
+            }
+
+            PropertyInfo[] properties = _data.opm_his.data1.GetType().GetProperties();
+            int LENGTH = properties.Length;
             
+            foreach (var i in _data.opm_his.data1)
+            {
+                Console.WriteLine(i);
+            }
+
             
+            foreach (var i in _data.opm_his.data2)
+            {
+                Console.WriteLine(i);
+            }
+
+
             
+            Console.WriteLine("Length of class properties is = " + LENGTH);
+            foreach (PropertyInfo pi in properties)
+            {
+                Console.WriteLine(pi);
+            }
             
-            Console.WriteLine("START NO = " + _data.s_no);
-            Console.WriteLine("END  NO  = " + _data.e_no);
-            Console.WriteLine("---Record 1        -----------");
+            Console.WriteLine("\n----------START OUT-----------");
+            /*
+            foreach (int value in Enumerable.Range(1, _NumRecs))
+            {
+                Console.Write("\nLoop -- " + value + "  ");
+            }
+
+            // for item in array loop through the structure
+            Console.WriteLine("\n\n---Record 1        -----------");
 
             Console.WriteLine("FLAG NO  = " + _data.opm_his.data1.dsp_flg);
             Console.WriteLine("MSG  NO  = " + _data.opm_his.data1.om_no);
@@ -376,109 +401,12 @@ namespace myFirstFocasProgram
             Console.WriteLine("HOUR     = " + _data.opm_his.data1.hour);
             Console.WriteLine("MINUTE   = " + _data.opm_his.data1.minute);
             Console.WriteLine("SECOND   = " + _data.opm_his.data1.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data2.ope_msg);
-
-            Console.WriteLine("---Record 2        -----------");
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data2.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data2.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data2.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data2.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data2.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data2.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data2.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data2.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data2.ope_msg); 
-            /*
-            Console.WriteLine("---Record 3        -----------");           
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data3.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data3.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data3.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data3.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data3.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data3.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data3.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data3.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data3.ope_msg); 
-            Console.WriteLine("---Record 4        -----------");           
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data4.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data4.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data4.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data4.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data4.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data4.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data4.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data4.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data4.ope_msg); 
-            
-            Console.WriteLine("---Record 5        -----------");
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data5.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data5.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data5.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data5.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data5.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data5.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data5.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data5.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data5.ope_msg);            
-            Console.WriteLine("---Record 6        -----------");
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data6.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data6.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data6.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data6.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data6.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data6.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data6.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data6.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data6.ope_msg);            
-            Console.WriteLine("---Record 7        -----------");
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data7.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data7.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data7.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data7.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data7.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data7.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data7.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data7.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data7.ope_msg);            
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data8.dsp_flg);
-            Console.WriteLine("---Record 8        -----------");
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data8.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data8.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data8.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data8.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data8.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data8.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data8.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data8.ope_msg); 
-            Console.WriteLine("---Record 9        -----------");           
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data9.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data9.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data9.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data9.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data9.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data9.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data9.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data9.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data9.ope_msg);            
-            Console.WriteLine("---Record 10        -----------");           
-            Console.WriteLine("FLAG NO  = " + _data.opm_his.data10.dsp_flg);
-            Console.WriteLine("MSG  NO  = " + _data.opm_his.data10.om_no);
-            Console.WriteLine("YEAR     = " + _data.opm_his.data10.year);
-            Console.WriteLine("MONTH    = " + _data.opm_his.data10.month);
-            Console.WriteLine("DAY      = " + _data.opm_his.data10.day);
-            Console.WriteLine("HOUR     = " + _data.opm_his.data10.hour);
-            Console.WriteLine("MINUTE   = " + _data.opm_his.data10.minute);
-            Console.WriteLine("SECOND   = " + _data.opm_his.data10.second);
-            Console.WriteLine("MESSAGE  = " + _data.opm_his.data10.ope_msg);
-            Console.WriteLine("-----------END  OUT-----------");
+            Console.WriteLine("MESSAGE  = " + _data.opm_his.data1.ope_msg);
             */
-
-            
-
-                 
             Console.WriteLine("End Program");
-            Console.WriteLine("-------------------------------------------------------");
-
+            Console.WriteLine("-------------------------------------------------------\n");
+            Console.WriteLine("-------------------------------------------------------\n");
+            
         }
  
     }
